@@ -54,25 +54,33 @@ $is_coaching = ($context === 'Coaching');
         <a href="<?=BASE_URL?>admin/students.php" class="<?=is_active('students')?>">
             <i class="fas fa-user-graduate"></i> <?= $is_coaching ? 'Coaching Students' : 'Student Directory' ?>
         </a>
+        <a href="<?=BASE_URL?>admin/student_add.php" class="<?=is_active('student_add')?>">
+            <i class="fas fa-plus-circle"></i> Add New Student
+        </a>
+        <a href="<?=BASE_URL?>admin/student_id_card.php" class="<?=is_active('student_id_card')?>">
+            <i class="fas fa-id-card"></i> Student ID Cards
+        </a>
+        <a href="<?=BASE_URL?>admin/admission_slip.php" class="<?=is_active('admission_slip')?>">
+            <i class="fas fa-file-alt"></i> Admission Slips
+        </a>
         
         <?php if (!$is_coaching): ?>
         <a href="<?=BASE_URL?>admin/teachers.php" class="<?=is_active('teachers')?>">
             <i class="fas fa-chalkboard-teacher"></i> Faculty Members
         </a>
+        <a href="<?=BASE_URL?>admin/teacher_add.php" class="<?=is_active('teacher_add')?>">
+            <i class="fas fa-plus-circle"></i> Add New Teacher
+        </a>
         <?php endif; ?>
 
         <a href="<?=BASE_URL?>admin/attendance.php" class="<?=is_active('attendance.php')?>">
-            <i class="fas fa-calendar-check"></i> Attendance
+            <i class="fas fa-calendar-check"></i> Mark Attendance
         </a>
-        
-        <?php if (!$is_coaching): ?>
-        <a href="<?=BASE_URL?>admin/attendance_daily.php" class="<?=is_active('attendance_daily')?>">
-            <i class="fas fa-tasks"></i> Daily Summary
+        <a href="<?=BASE_URL?>admin/attendance_center.php" class="<?=is_active('attendance_center')?>">
+            <i class="fas fa-chart-pie"></i> Attendance Center
         </a>
-        <?php endif; ?>
-
-        <a href="<?=BASE_URL?>admin/attendance_report.php" class="<?=is_active('attendance_report')?>">
-            <i class="fas fa-clipboard-list"></i> Logs & Reports
+        <a href="<?=BASE_URL?>admin/biometric_import.php" class="<?=is_active('biometric')?> text-info">
+            <i class="fas fa-fingerprint"></i> Biometric Sync
         </a>
 
         <div class="px-3 mb-2 mt-4">
@@ -81,62 +89,64 @@ $is_coaching = ($context === 'Coaching');
         <a href="<?=BASE_URL?>admin/fee_pay.php" class="<?=is_active('fee_pay')?>">
             <i class="fas fa-money-bill-wave"></i> Fee Collection
         </a>
-        <a href="<?=BASE_URL?>admin/pending_fees.php" class="<?=is_active('pending_fees')?>">
-            <i class="fas fa-clock"></i> Monthly Dues
-        </a>
-        <a href="<?=BASE_URL?>admin/ledger.php" class="<?=is_active('ledger')?>">
-            <i class="fas fa-book"></i> Fee Ledgers
+        <a href="<?=BASE_URL?>admin/finance_hub.php" class="<?=is_active('finance_hub')?>">
+            <i class="fas fa-university"></i> Finance Hub
         </a>
         
         <?php if (!$is_coaching): ?>
-        <a href="<?=BASE_URL?>admin/salaries.php" class="<?=is_active('salaries.php')?>">
-            <i class="fas fa-wallet"></i> Staff Salaries
+        <a href="<?=BASE_URL?>admin/salaries.php" class="<?=is_active('salaries')?>">
+            <i class="fas fa-wallet"></i> Faculty Payroll
         </a>
-        <a href="<?=BASE_URL?>admin/expenses.php" class="<?=is_active('expenses.php')?>">
+        <a href="<?=BASE_URL?>admin/expenses.php" class="<?=is_active('expenses')?> border-bottom">
             <i class="fas fa-file-invoice"></i> Official Expenses
         </a>
-        <a href="<?=BASE_URL?>admin/profitloss.php" class="<?=is_active('profitloss.php')?>">
-            <i class="fas fa-balance-scale"></i> Profit & Loss
+        <a href="<?=BASE_URL?>admin/profitloss.php" class="<?=is_active('profitloss')?>">
+            <i class="fas fa-balance-scale"></i> Analytics & P/L
         </a>
         <?php endif; ?>
 
         <div class="px-3 mb-2 mt-4">
-            <small class="text-uppercase text-muted fw-bold" style="font-size: 0.65rem; letter-spacing: 1px;">Exams & Setup</small>
+            <small class="text-uppercase text-muted fw-bold" style="font-size: 0.65rem; letter-spacing: 1px;">Academic Setup</small>
         </div>
+        <?php /*
         <a href="<?=BASE_URL?>admin/exams.php" class="<?=is_active('exams.php')?>">
             <i class="fas fa-file-alt"></i> Manage Exams
         </a>
         <a href="<?=BASE_URL?>admin/exam_marks.php" class="<?=is_active('exam_marks')?>">
             <i class="fas fa-award"></i> Mark Entry
         </a>
+        <a href="<?=BASE_URL?>admin/result_card.php" class="<?=is_active('result_card')?>">
+            <i class="fas fa-certificate"></i> Result Cards
+        </a>
         <a href="<?=BASE_URL?>admin/timetable.php" class="<?=is_active('timetable.php')?>">
             <i class="fas fa-clock"></i> <?= $is_coaching ? 'Batch Schedule' : 'School Timetable' ?>
+        </a>
+        */ ?>
+        <a href="<?=BASE_URL?>admin/sections_manage.php" class="<?=is_active('sections_manage.php')?>">
+            <i class="fas fa-layer-group"></i> Class Divisions
         </a>
         <a href="<?=BASE_URL?>admin/sections.php" class="<?=is_active('sections.php')?>">
             <i class="fas <?= $is_coaching ? 'fa-layer-group' : 'fa-door-open' ?>"></i> <?= $is_coaching ? 'Coaching Batches' : 'Class Sections' ?>
         </a>
-        <a href="<?=BASE_URL?>admin/classes_manage.php" class="<?=is_active('classes_manage')?>">
-            <i class="fas fa-cogs"></i> System Setup
+        <a href="<?=BASE_URL?>admin/classes.php" class="<?=is_active('classes.php')?>">
+            <i class="fas fa-school"></i> Class Management
         </a>
-        <a href="<?=BASE_URL?>admin/biometric_import.php" class="<?=is_active('biometric')?> text-info">
-            <i class="fas fa-fingerprint"></i> Biometric Sync
-        </a>
-    
+
+
+        
     <?php elseif ($_SESSION['role'] === 'teacher'): ?>
         <a href="<?=BASE_URL?>teacher/dashboard.php" class="<?=is_active('dashboard')?>">
             <i class="fas fa-home"></i> Home
         </a>
-        <a href="<?=BASE_URL?>admin/students.php" class="<?=is_active('students')?>">
-            <i class="fas fa-user-graduate"></i> My Students
-        </a>
-        <a href="<?=BASE_URL?>admin/attendance.php" class="<?=is_active('attendance')?>">
+        
+        <div class="px-3 mb-2 mt-4">
+            <small class="text-uppercase text-muted fw-bold" style="font-size: 0.65rem; letter-spacing: 1px;">Attendance Management</small>
+        </div>
+        <a href="<?=BASE_URL?>admin/attendance.php" class="<?=is_active('attendance.php')?>">
             <i class="fas fa-calendar-check"></i> Mark Attendance
         </a>
-        <a href="<?=BASE_URL?>admin/exam_marks.php" class="<?=is_active('exam_marks')?>">
-            <i class="fas fa-award"></i> Post Result
-        </a>
-        <a href="<?=BASE_URL?>admin/teacher_attendance.php" class="<?=is_active('teacher_attendance')?>">
-            <i class="fas fa-user-clock"></i> My Attendance
+        <a href="<?=BASE_URL?>admin/attendance_center.php" class="<?=is_active('attendance_center')?>">
+            <i class="fas fa-clipboard-list"></i> Attendance Center
         </a>
         
     <?php elseif ($_SESSION['role'] === 'accountant'): ?>
@@ -146,20 +156,17 @@ $is_coaching = ($context === 'Coaching');
         <a href="<?=BASE_URL?>admin/fee_pay.php" class="<?=is_active('fee_pay')?>">
             <i class="fas fa-cash-register"></i> Collect Fees
         </a>
-        <a href="<?=BASE_URL?>admin/pending_fees.php" class="<?=is_active('pending')?>">
-            <i class="fas fa-user-clock"></i> Pending Dues
+        <a href="<?=BASE_URL?>admin/finance_hub.php" class="<?=is_active('finance_hub')?>">
+            <i class="fas fa-university"></i> Finance Hub
         </a>
-        <a href="<?=BASE_URL?>admin/ledger.php" class="<?=is_active('ledger')?>">
-            <i class="fas fa-book"></i> Student Ledger
-        </a>
-        <a href="<?=BASE_URL?>admin/salary_manage.php" class="<?=is_active('salary')?>">
+        <a href="<?=BASE_URL?>admin/salaries.php" class="<?=is_active('salaries')?>">
             <i class="fas fa-wallet"></i> Pay Salaries
         </a>
         <a href="<?=BASE_URL?>admin/expenses.php" class="<?=is_active('expenses')?>">
             <i class="fas fa-file-invoice-dollar"></i> Manage Expenses
         </a>
-        <a href="<?=BASE_URL?>admin/income_report.php" class="<?=is_active('report')?>">
-            <i class="fas fa-chart-line"></i> Income Report
+        <a href="<?=BASE_URL?>admin/profitloss.php" class="<?=is_active('profitloss')?>">
+            <i class="fas fa-chart-line"></i> Analytics & P/L
         </a>
     <?php endif; ?>
     

@@ -13,7 +13,7 @@ if ($id > 0) {
         $pdo->beginTransaction();
         
         // Delete related attendance
-        $stmt = $pdo->prepare('DELETE FROM attendance WHERE student_id = ?');
+        $stmt = $pdo->prepare('DELETE FROM student_attendance WHERE student_id = ?');
         $stmt->execute([$id]);
         
         // Delete related fees

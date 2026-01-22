@@ -96,6 +96,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label class="form-label fw-bold">Contact Number</label>
                     <input class="form-control" name="contact" placeholder="03XXXXXXXXX">
                 </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Designation</label>
+                    <input class="form-control" name="designation" value="Faculty Member" placeholder="e.g. Senior Teacher">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Institution Type</label>
+                    <select name="institution_type" class="form-select">
+                        <option value="School">School</option>
+                        <option value="Coaching">Coaching</option>
+                    </select>
+                </div>
 
                 <div class="col-12 mt-4 pt-4 border-top text-end">
                     <a href="<?=BASE_URL?>admin/teachers.php" class="btn btn-light px-4 me-2">Cancel</a>

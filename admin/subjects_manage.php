@@ -6,12 +6,16 @@ require_once __DIR__ . '/../includes/header.php';
 
 $pdo = getPDO();
 $msg = '';
+$context = $_SESSION['context'] ?? 'School';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subject_name'])) {
-    $stmt = $pdo->prepare('INSERT INTO subjects (name, code, created_at) VALUES (:n, :c, NOW())');
-    $stmt->execute([':n'=>$_POST['subject_name'], ':c'=>$_POST['code']]);
+    $stmt = $pdo->prepare('INSERT INTO subjects (name, code, institution_type, created_at) VALUES (:n, :c, :ctx, NOW())');
+    $stmt->execute([':n'=>$_POST['subject_name'], ':c'=>$_POST['code'], ':ctx'=>$context]);
     $msg = 'Subject created';
 }
-$subjects = $pdo->query('SELECT * FROM subjects ORDER BY id')->fetchAll();
+$subjects = $pdo->prepare('SELECT * FROM subjects WHERE institution_type IN (:ctx, "Both") ORDER BY id');
+$subjects->execute([':ctx' => $context]);
+$subjects = $subjects->fetchAll();
 
 ?>
 <div class="row align-items-center mb-4">

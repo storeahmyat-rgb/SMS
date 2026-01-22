@@ -9,8 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['name'])) {
     $stmt->execute([':n'=>$_POST['name'], ':c'=>$_POST['code']]);
 }
 $subjects = $pdo->query('SELECT * FROM subjects ORDER BY id DESC')->fetchAll();
+
+$msg = $_GET['msg'] ?? '';
+$error = $_GET['error'] ?? '';
 ?>
 <h1>Curriculum Subjects</h1>
+<?php if ($msg): ?><div class="alert alert-success shadow-sm"><i class="fas fa-check-circle me-1"></i> <?=htmlspecialchars($msg)?></div><?php endif; ?>
+<?php if ($error): ?><div class="alert alert-danger shadow-sm"><i class="fas fa-exclamation-circle me-1"></i> <?=htmlspecialchars($error)?></div><?php endif; ?>
 <div class="row">
     <div class="col-md-4">
         <div class="card p-4 mb-4">
@@ -51,7 +56,11 @@ $subjects = $pdo->query('SELECT * FROM subjects ORDER BY id DESC')->fetchAll();
                             <td class="fw-bold"><?=htmlspecialchars($s['name'])?></td>
                             <td><span class="badge bg-light text-dark"><?=htmlspecialchars($s['code'])?></span></td>
                             <td class="text-end pe-4">
-                                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                <a href="<?=BASE_URL?>admin/subject_delete.php?id=<?=$s['id']?>" 
+                                   class="btn btn-sm btn-outline-danger" 
+                                   onclick="return confirm('Delete this subject? This action cannot be undone.')">
+                                    <i class="fas fa-trash me-1"></i> Delete
+                                </a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

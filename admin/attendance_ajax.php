@@ -7,8 +7,18 @@ $pdo = getPDO();
 $action = $_GET['action'] ?? $_POST['action'] ?? '';
 if ($action === 'sections') {
     $class_id = intval($_GET['class_id'] ?? 0);
-    $stmt = $pdo->prepare('SELECT * FROM sections WHERE class_id = :c');
-    $stmt->execute([':c'=>$class_id]);
+    $teacher_id = intval($_GET['teacher_id'] ?? 0);
+    
+    $query = 'SELECT * FROM sections WHERE class_id = :c';
+    $params = [':c'=>$class_id];
+    
+    if ($_SESSION['role'] === 'teacher' && $teacher_id > 0) {
+        $query .= ' AND class_teacher_id = :t';
+        $params[':t'] = $teacher_id;
+    }
+    
+    $stmt = $pdo->prepare($query);
+    $stmt->execute($params);
     echo json_encode($stmt->fetchAll());
     exit;
 }
@@ -17,8 +27,31 @@ if ($action === 'load') {
     $class_id = intval($_GET['class_id'] ?? 0);
     $section_id = intval($_GET['section_id'] ?? 0);
     $date = $_GET['date'] ?? date('Y-m-d');
-    $stmt = $pdo->prepare('SELECT * FROM students WHERE class_id = :c AND (section_id = :s OR :s = 0) ORDER BY roll_no, full_name');
-    $stmt->execute([':c'=>$class_id, ':s'=>$section_id]);
+    
+    // Security check for teachers
+    if ($_SESSION['role'] === 'teacher') {
+        $stT = $pdo->prepare('SELECT t.id FROM teachers t JOIN users u ON t.full_name = u.full_name WHERE u.username = :n LIMIT 1');
+        $stT->execute([':n' => $_SESSION['username']]);
+        $tid = $stT->fetchColumn() ?: 0;
+        
+        $stV = $pdo->prepare('SELECT count(*) FROM sections WHERE id = :s AND class_teacher_id = :t');
+        $stV->execute([':s'=>$section_id, ':t'=>$tid]);
+        if ($stV->fetchColumn() == 0) {
+            echo '<div class="alert alert-danger">Access Denied: You are not assigned to this section.</div>';
+            exit;
+        }
+    }
+
+    $sql = 'SELECT * FROM students WHERE class_id = :c AND status = "Active"';
+    $params = [':c' => $class_id];
+    if ($section_id > 0) {
+        $sql .= ' AND section_id = :s';
+        $params[':s'] = $section_id;
+    }
+    $sql .= ' ORDER BY roll_no, full_name';
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
     $students = $stmt->fetchAll();
 
     // load existing attendance
@@ -55,6 +88,21 @@ if ($action === 'save') {
     $date = $_POST['date'] ?? date('Y-m-d');
     $statuses = $_POST['status'] ?? [];
     $userId = $_SESSION['user_id'];
+    
+    // Security check for teachers
+    if ($_SESSION['role'] === 'teacher') {
+        $stT = $pdo->prepare('SELECT t.id FROM teachers t JOIN users u ON t.full_name = u.full_name WHERE u.username = :n LIMIT 1');
+        $stT->execute([':n' => $_SESSION['username']]);
+        $tid = $stT->fetchColumn() ?: 0;
+        
+        $stV = $pdo->prepare('SELECT count(*) FROM sections WHERE id = :s AND class_teacher_id = :t');
+        $stV->execute([':s'=>$section_id, ':t'=>$tid]);
+        if ($stV->fetchColumn() == 0) {
+            echo json_encode(['success'=>false, 'error'=>'Access Denied']);
+            exit;
+        }
+    }
+
     try {
         $pdo->beginTransaction();
         $ins = $pdo->prepare('INSERT INTO student_attendance (student_id, class_id, section_id, attendance_date, status, recorded_by, recorded_at) VALUES (:sid, :c, :s, :d, :st, :rb, NOW())');

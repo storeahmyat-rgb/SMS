@@ -94,6 +94,7 @@ $fees = $pdo->query('SELECT f.*, c.name AS class_name FROM fees f LEFT JOIN clas
                         <option>Monthly</option>
                         <option>Admission</option>
                         <option>Exam</option>
+                        <option>Practical</option>
                         <option>Transport</option>
                         <option>Other</option>
                     </select>

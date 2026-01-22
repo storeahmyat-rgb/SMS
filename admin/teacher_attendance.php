@@ -20,7 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $msg = 'Saved';
 }
-$teachers = $pdo->query('SELECT id, full_name FROM teachers')->fetchAll();
+$context = $_SESSION['context'] ?? 'School';
+$teachers = $pdo->prepare('SELECT id, full_name FROM teachers WHERE institution_type = :ctx');
+$teachers->execute([':ctx' => $context]);
+$teachers = $teachers->fetchAll();
 
 ?>
 <h1>Teacher Attendance</h1>

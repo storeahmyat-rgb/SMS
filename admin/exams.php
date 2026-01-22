@@ -16,6 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 $exams = $pdo->query('SELECT * FROM exams ORDER BY id DESC LIMIT 50')->fetchAll();
 
+$msg = $_GET['msg'] ?? '';
+$error = $_GET['error'] ?? '';
 ?>
 <div class="row align-items-center mb-4">
     <div class="col">
@@ -28,6 +30,13 @@ $exams = $pdo->query('SELECT * FROM exams ORDER BY id DESC LIMIT 50')->fetchAll(
         </button>
     </div>
 </div>
+
+<?php if ($msg): ?>
+    <div class="alert alert-success border-0 shadow-sm mb-4"><i class="fas fa-check-circle me-1"></i> <?=htmlspecialchars($msg)?></div>
+<?php endif; ?>
+<?php if ($error): ?>
+    <div class="alert alert-danger border-0 shadow-sm mb-4"><i class="fas fa-exclamation-circle me-1"></i> <?=htmlspecialchars($error)?></div>
+<?php endif; ?>
 
 <?php if ($msg): ?>
     <div class="alert alert-info border-0 shadow-sm mb-4"><i class="fas fa-check-circle me-1"></i> <?=htmlspecialchars($msg)?></div>
@@ -54,9 +63,16 @@ $exams = $pdo->query('SELECT * FROM exams ORDER BY id DESC LIMIT 50')->fetchAll(
                     <td><?=date('d M Y', strtotime($e['start_date']))?></td>
                     <td><?=date('d M Y', strtotime($e['end_date']))?></td>
                     <td class="text-end pe-4">
-                        <a href="<?=BASE_URL?>admin/exam_marks.php?exam_id=<?=$e['id']?>" class="btn btn-sm btn-outline-info">
-                            <i class="fas fa-pen-nib me-1"></i> Enter Marks
-                        </a>
+                        <div class="btn-group">
+                            <a href="<?=BASE_URL?>admin/exam_marks.php?exam_id=<?=$e['id']?>" class="btn btn-sm btn-outline-info">
+                                <i class="fas fa-pen-nib me-1"></i> Enter Marks
+                            </a>
+                            <a href="<?=BASE_URL?>admin/exam_delete.php?id=<?=$e['id']?>" 
+                               class="btn btn-sm btn-outline-danger" 
+                               onclick="return confirm('Delete this exam? This action cannot be undone.')">
+                                <i class="fas fa-trash me-1"></i> Delete
+                            </a>
+                        </div>
                     </td>
                 </tr>
             <?php endforeach; ?>

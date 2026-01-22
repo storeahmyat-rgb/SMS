@@ -38,6 +38,9 @@ try {
     // 5. Payments Table Fixes
     addColumn($pdo, 'fee_payments', 'transaction_id', "VARCHAR(100) AFTER student_id");
 
+    // 6. Course/Subjects Fixes
+    addColumn($pdo, 'subjects', 'institution_type', "ENUM('School', 'Coaching', 'Both') DEFAULT 'Both' AFTER code");
+
     // 5. Directory Fixes (Absolute paths)
     $dirs = [
         __DIR__ . '/../assets/uploads/',

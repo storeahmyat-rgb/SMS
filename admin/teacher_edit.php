@@ -14,8 +14,19 @@ $t = $stmt->fetch();
 if (!$t) { echo 'Not found'; exit; }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $upd = $pdo->prepare('UPDATE teachers SET full_name=:n, cnic=:c, qualification=:q, contact=:co, salary=:s, joining_date=:j, status=:st WHERE id=:id');
-    $upd->execute([':n'=>$_POST['full_name'], ':c'=>$_POST['cnic'], ':q'=>$_POST['qualification'], ':co'=>$_POST['contact'], ':s'=>$_POST['salary'], ':j'=>$_POST['joining_date'], ':st'=>$_POST['status'], ':id'=>$id]);
+    $upd = $pdo->prepare('UPDATE teachers SET full_name=:n, cnic=:c, qualification=:q, contact=:co, salary=:s, joining_date=:j, designation=:d, institution_type=:it, status=:st WHERE id=:id');
+    $upd->execute([
+        ':n'=>$_POST['full_name'], 
+        ':c'=>$_POST['cnic'], 
+        ':q'=>$_POST['qualification'], 
+        ':co'=>$_POST['contact'], 
+        ':s'=>$_POST['salary'], 
+        ':j'=>$_POST['joining_date'], 
+        ':d'=>$_POST['designation'] ?? 'Faculty Member',
+        ':it'=>$_POST['institution_type'] ?? 'School',
+        ':st'=>$_POST['status'], 
+        ':id'=>$id
+    ]);
     $msg = 'Updated';
     $stmt->execute([':id'=>$id]);
     $t = $stmt->fetch();

@@ -16,6 +16,10 @@ $stmt2 = $pdo->prepare('SELECT * FROM fees WHERE institution_type IN (:ctx, "Bot
 $stmt2->execute([':ctx' => $context]);
 $fees = $stmt2->fetchAll();
 
+$classes_list = $pdo->query('SELECT id, name FROM classes')->fetchAll();
+$classes_json = json_encode($classes_list);
+?>
+<?php
 $msg = '';
 $payment_id = 0;
 
@@ -187,6 +191,31 @@ const indicator = document.getElementById('student_indicator');
 
 let cartData = [];
 
+const allClasses = <?= $classes_json ?>;
+
+function isFeeApplicable(feeName, studentClassId) {
+    const studentClass = allClasses.find(c => c.id == studentClassId);
+    if (!studentClass) return true;
+
+    const normFee = feeName.toLowerCase().replace(/[^a-z0-9]/g, ' ');
+    const normStudentClass = studentClass.name.toLowerCase().replace(/[^a-z0-9]/g, ' ');
+
+    let bestMatchMatch = '';
+    allClasses.forEach(c => {
+        const nc = c.name.toLowerCase().replace(/[^a-z0-9]/g, ' ');
+        const regex = new RegExp('\\b' + nc.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '\\b', 'i');
+        if (regex.test(normFee)) {
+            if (nc.length > bestMatchMatch.length) {
+                bestMatchMatch = nc;
+            }
+        }
+    });
+
+    if (bestMatchMatch === normStudentClass) return true;
+    if (bestMatchMatch === '') return true; // Truly global
+    return false;
+}
+
 function updateCart() {
     cartItems.innerHTML = '';
     let total = 0;
@@ -228,7 +257,15 @@ studentSelect.addEventListener('change', function() {
     const feeOpts = feeSelect.querySelectorAll('.fee-opt');
     feeOpts.forEach(opt => {
         const feeClass = opt.getAttribute('data-class');
-        opt.style.display = (!feeClass || feeClass === "" || feeClass === classId) ? "" : "none";
+        const feeName = opt.textContent;
+        
+        if (feeClass && feeClass == classId) {
+            opt.style.display = "";
+        } else if (!feeClass || feeClass == "" || feeClass == "0") {
+            opt.style.display = isFeeApplicable(feeName, classId) ? "" : "none";
+        } else {
+            opt.style.display = "none";
+        }
     });
 });
 
@@ -242,7 +279,15 @@ feeSelect.addEventListener('change', function() {
     const feeOpts = feeSelect.querySelectorAll('.fee-opt');
     feeOpts.forEach(opt => {
         const feeClass = opt.getAttribute('data-class') || "";
-        opt.style.display = (!feeClass || feeClass === "" || feeClass === classId) ? "" : "none";
+        const feeName = opt.textContent;
+
+        if (feeClass && feeClass == classId) {
+            opt.style.display = "";
+        } else if (!feeClass || feeClass == "" || feeClass == "0") {
+            opt.style.display = isFeeApplicable(feeName, classId) ? "" : "none";
+        } else {
+            opt.style.display = "none";
+        }
     });
 })();
 
@@ -279,13 +324,17 @@ function removeItem(index) {
         studentSelect.dispatchEvent(new Event('change'));
         if(ftype) {
             setTimeout(() => {
+                const autoConfirm = urlParams.get('auto_confirm') === '1';
                 const opts = feeSelect.querySelectorAll('option');
                 for(let o of opts) {
                     if(o.text.includes(ftype)) {
                         feeSelect.value = o.value;
                         feeSelect.dispatchEvent(new Event('change'));
-                        // Auto add admission fee
-                        document.getElementById('addFeeBtn').click();
+                        
+                        // Ask before adding if not auto-confirmed
+                        if (autoConfirm || confirm(`Do you want to apply ${ftype} charges for this student?`)) {
+                            document.getElementById('addFeeBtn').click();
+                        }
                         break;
                     }
                 }

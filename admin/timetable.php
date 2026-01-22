@@ -4,17 +4,41 @@ requireRole(['super_admin','teacher']);
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/header.php';
 $pdo = getPDO();
-$classes = $pdo->query('SELECT * FROM classes')->fetchAll();
-$subjects = $pdo->query('SELECT * FROM subjects')->fetchAll();
-$teachers = $pdo->query('SELECT id, full_name FROM teachers')->fetchAll();
-$sections = $pdo->query('SELECT * FROM sections')->fetchAll();
+$context = $_SESSION['context'] ?? 'School';
+
+$classes = $pdo->prepare('SELECT * FROM classes WHERE institution_type = :ctx');
+$classes->execute([':ctx' => $context]);
+$classes = $classes->fetchAll();
+
+$subjects = $pdo->prepare('SELECT * FROM subjects WHERE institution_type IN (:ctx, "Both")');
+$subjects->execute([':ctx' => $context]);
+$subjects = $subjects->fetchAll();
+
+$teachers = $pdo->prepare('SELECT id, full_name FROM teachers WHERE institution_type = :ctx');
+$teachers->execute([':ctx' => $context]);
+$teachers = $teachers->fetchAll();
+
+$sections = $pdo->prepare('SELECT * FROM sections WHERE institution_type = :ctx');
+$sections->execute([':ctx' => $context]);
+$sections = $sections->fetchAll();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['class_id'])) {
     $stmt = $pdo->prepare('INSERT INTO timetable (class_id, section_id, day, period, subject_id, teacher_id, start_time, end_time) VALUES (:c, :s, :d, :p, :sub, :t, :st, :en)');
     $stmt->execute([':c'=>$_POST['class_id'], ':s'=>$_POST['section_id'], ':d'=>$_POST['day'], ':p'=>$_POST['period'], ':sub'=>$_POST['subject_id'], ':t'=>$_POST['teacher_id'], ':st'=>$_POST['start_time'], ':en'=>$_POST['end_time']]);
 }
-$tt = $pdo->query('SELECT tt.*, c.name AS class_name, sec.name AS section_name, s.name AS subject_name, t.full_name AS teacher_name FROM timetable tt LEFT JOIN classes c ON tt.class_id=c.id LEFT JOIN sections sec ON tt.section_id=sec.id LEFT JOIN subjects s ON tt.subject_id=s.id LEFT JOIN teachers t ON tt.teacher_id=t.id ORDER BY tt.class_id, tt.day, tt.period')->fetchAll();
+
+$tt = $pdo->prepare('SELECT tt.*, c.name AS class_name, sec.name AS section_name, s.name AS subject_name, t.full_name AS teacher_name 
+                    FROM timetable tt 
+                    LEFT JOIN classes c ON tt.class_id=c.id 
+                    LEFT JOIN sections sec ON tt.section_id=sec.id 
+                    LEFT JOIN subjects s ON tt.subject_id=s.id 
+                    LEFT JOIN teachers t ON tt.teacher_id=t.id 
+                    WHERE c.institution_type = :ctx
+                    ORDER BY tt.class_id, tt.day, tt.period');
+$tt->execute([':ctx' => $context]);
+$tt = $tt->fetchAll();
 ?>
-<h1>School Timetable</h1>
+<h1><?= $context === 'Coaching' ? 'Batch Schedule' : 'School Timetable' ?></h1>
 <p class="text-muted">Master schedule of classes, subjects, and faculty assignments.</p>
 
 <div class="card p-4 mb-4 shadow-sm border-0">

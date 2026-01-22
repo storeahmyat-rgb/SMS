@@ -5,8 +5,25 @@ require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/header.php';
 
 $pdo = getPDO();
-$classes = $pdo->query('SELECT * FROM classes')->fetchAll();
 
+$is_teacher = ($_SESSION['role'] === 'teacher');
+$current_teacher_id = 0;
+
+if ($is_teacher) {
+    // FIX: Match teacher using username from users table instead of full_name directly
+    $stT = $pdo->prepare('SELECT t.id FROM teachers t JOIN users u ON t.full_name = u.full_name WHERE u.username = :n LIMIT 1');
+    $stT->execute([':n' => $_SESSION['username']]);
+    $current_teacher_id = $stT->fetchColumn() ?: 0;
+    
+    // Only classes where this teacher has at least one assigned section
+    $classes = $pdo->prepare('SELECT DISTINCT c.* FROM classes c 
+                               JOIN sections s ON c.id = s.class_id 
+                               WHERE s.class_teacher_id = :t');
+    $classes->execute([':t' => $current_teacher_id]);
+    $classes = $classes->fetchAll();
+} else {
+    $classes = $pdo->query('SELECT * FROM classes')->fetchAll();
+}
 ?>
 <h3>Student Attendance</h3>
 <div class="card p-4">
@@ -39,10 +56,16 @@ $classes = $pdo->query('SELECT * FROM classes')->fetchAll();
 document.getElementById('class_id').addEventListener('change', async function(){
   const classId = this.value;
   if(!classId) return;
-  const res = await fetch('<?=BASE_URL?>admin/attendance_ajax.php?action=sections&class_id='+classId);
+  const isTeacher = <?= json_encode($is_teacher) ?>;
+  const teacherId = <?= json_encode($current_teacher_id) ?>;
+  
+  let url = '<?=BASE_URL?>admin/attendance_ajax.php?action=sections&class_id='+classId;
+  if(isTeacher) url += '&teacher_id='+teacherId;
+  
+  const res = await fetch(url);
   const data = await res.json();
   const sel = document.getElementById('section_id'); 
-  sel.innerHTML = '<option value="">-- All --</option>';
+  sel.innerHTML = isTeacher ? '' : '<option value="">-- All --</option>';
   data.forEach(s=>{ const o = document.createElement('option'); o.value=s.id; o.textContent=s.name; sel.appendChild(o); });
 });
 

@@ -15,7 +15,7 @@ $stats['sections'] = $pdo->query('SELECT COUNT(*) FROM sections')->fetchColumn()
 
 // Financial data
 $stats['income'] = $pdo->query('SELECT COALESCE(SUM(amount), 0) FROM fee_payments WHERE MONTH(paid_on)=MONTH(NOW()) AND YEAR(paid_on)=YEAR(NOW())')->fetchColumn() ?? 0;
-$stats['salaries'] = $pdo->query('SELECT COALESCE(SUM(amount), 0) FROM salaries WHERE paid_status="Paid" AND MONTH(paid_on)=MONTH(NOW()) AND YEAR(paid_on)=YEAR(NOW())')->fetchColumn() ?? 0;
+$stats['salaries'] = $pdo->query('SELECT COALESCE(SUM(total_payout), 0) FROM salaries WHERE paid_status="Paid" AND MONTH(paid_on)=MONTH(NOW()) AND YEAR(paid_on)=YEAR(NOW())')->fetchColumn() ?? 0;
 
 // Class-wise student count
 $class_stats = $pdo->query('SELECT c.name, COUNT(s.id) as count FROM classes c LEFT JOIN students s ON c.id=s.class_id GROUP BY c.id ORDER BY c.name')->fetchAll();
@@ -62,12 +62,12 @@ $class_stats = $pdo->query('SELECT c.name, COUNT(s.id) as count FROM classes c L
                   <div class="col-md-6 border-end">
                       <h4 class="text-success">Rs. <?=number_format($stats['income'], 0)?></h4>
                       <p class="text-muted">Income Collected</p>
-                      <a href="<?=BASE_URL?>admin/income_report.php" class="btn btn-sm btn-outline-success">View Report</a>
+                      <a href="<?=BASE_URL?>admin/profitloss.php?tab=income" class="btn btn-sm btn-outline-success">View Report</a>
                   </div>
                   <div class="col-md-6">
                       <h4 class="text-danger">Rs. <?=number_format($stats['salaries'], 0)?></h4>
                       <p class="text-muted">Salaries Paid</p>
-                      <a href="<?=BASE_URL?>admin/salaries_manage.php" class="btn btn-sm btn-outline-danger">View Salaries</a>
+                      <a href="<?=BASE_URL?>admin/salaries.php" class="btn btn-sm btn-outline-danger">View Salaries</a>
                   </div>
               </div>
           </div>

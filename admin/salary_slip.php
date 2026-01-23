@@ -16,57 +16,68 @@ if (!$s) { echo 'Salary record not found'; exit; }
 ?>
 <div class="row justify-content-center mt-5">
     <div class="col-md-8">
-        <div class="card border shadow-none" style="border: 2px solid #333 !important;">
+        <div class="card border-0 shadow-sm" style="border: 2px solid #eee !important;">
             <div class="card-body p-0">
-                <div class="bg-light p-4 text-center border-bottom">
-                    <h3 class="fw-bold mb-1 text-uppercase">Modern School System</h3>
-                    <p class="mb-0 text-muted">Monthly Staff Salary Pay-Slip</p>
+                <div class="bg-dark text-white p-4 text-center border-bottom">
+                    <h2 class="fw-bold mb-1 text-uppercase">Modern School System</h2>
+                    <p class="mb-0 opacity-75">FACULTY SALARY DISBURSEMENT SLIP</p>
                 </div>
                 <div class="p-4">
-                    <div class="row mb-4">
+                    <div class="row mb-5">
                         <div class="col-6">
-                            <h6 class="text-uppercase small text-muted font-weight-bold">Employee Particulars</h6>
-                            <div class="fs-5 fw-bold"><?=htmlspecialchars($s['full_name'])?></div>
-                            <div class="text-muted"><?=htmlspecialchars($s['designation'] ?: 'Faculty Member')?></div>
-                            <div class="small">Employee ID: <?=htmlspecialchars($s['t_code'])?></div>
+                            <h6 class="text-uppercase small text-muted font-weight-bold mb-3">Employee Particulars</h6>
+                            <div class="fs-5 fw-bold text-primary"><?=htmlspecialchars($s['full_name'])?></div>
+                            <div class="text-muted fw-bold"><?=htmlspecialchars($s['designation'] ?: 'Faculty Member')?></div>
+                            <div class="small mt-1">Employee ID: <span class="fw-bold"><?=htmlspecialchars($s['t_code'])?></span></div>
                         </div>
                         <div class="col-6 text-end">
-                            <h6 class="text-uppercase small text-muted font-weight-bold">Pay Period</h6>
+                            <h6 class="text-uppercase small text-muted font-weight-bold mb-3">Voucher Details</h6>
                             <div class="fs-5 fw-bold"><?=date('F Y', strtotime($s['month_year'].'-01'))?></div>
-                            <div class="text-muted">Voucher #SLP-<?=htmlspecialchars($s['id'])?></div>
+                            <div class="text-muted small">Voucher #: <span class="fw-bold">SLP-<?=htmlspecialchars($s['id'])?></span></div>
+                            <div class="text-muted small">Paid On: <span class="fw-bold"><?=date('d M Y', strtotime($s['paid_on']))?></span></div>
                         </div>
                     </div>
 
-                    <table class="table table-bordered">
-                        <thead><tr class="bg-light"><th>Description</th><th class="text-end">Amount (Rs.)</th></tr></thead>
+                    <table class="table table-bordered mb-4">
+                        <thead class="bg-light"><tr class="small text-uppercase"><th>Earnings Description</th><th class="text-end">Amount (PKR)</th></tr></thead>
                         <tbody>
-                            <tr><td>Base Monthly Salary</td><td class="text-end"><?=number_format($s['base_salary'], 2)?></td></tr>
-                            <tr style="height: 100px;">
-                                <td class="ps-3 pt-3">
-                                    <div class="fw-bold">Attendance Proration</div>
-                                    <small class="text-muted">Calculated based on actual working days (Present/Leave/Late).</small>
-                                </td>
-                                <td class="text-end pt-3 text-danger">Audit Applied</td>
+                            <tr>
+                                <td class="py-3">Base Contractual Salary<br><small class="text-muted">Standard monthly committed amount</small></td>
+                                <td class="text-end py-3 fw-bold"><?=number_format($s['base_salary'], 2)?></td>
                             </tr>
-                            <tr class="fw-bold fs-5">
-                                <td class="bg-light">Net Payable Amount</td>
-                                <td class="bg-light text-end text-primary">Rs. <?=number_format($s['amount'], 2)?></td>
+                            <tr>
+                                <td class="py-3">Attendance Proration Adjustment<br><small class="text-muted">Based on worked days (Present/Leave/Late)</small></td>
+                                <td class="text-end py-3 text-<?=($s['amount'] < $s['base_salary'] ? 'danger' : 'success')?>">
+                                    <?=number_format($s['amount'] - $s['base_salary'], 2)?>
+                                </td>
+                            </tr>
+                            <?php if($s['bonus_deduction'] != 0): ?>
+                            <tr>
+                                <td class="py-3">Manual Adjustments (Bonus/Deduction)<br><small class="text-muted"><?=htmlspecialchars($s['payment_notes'] ?: 'No specific notes')?></small></td>
+                                <td class="text-end py-3 <?=($s['bonus_deduction'] > 0 ? 'text-success' : 'text-danger')?>">
+                                    <?=number_format($s['bonus_deduction'], 2)?>
+                                </td>
+                            </tr>
+                            <?php endif; ?>
+                            <tr class="fw-bold fs-4 bg-light">
+                                <td class="py-3">Net Disbursement (<?=$s['payment_method']?>)</td>
+                                <td class="text-end py-3 text-dark">Rs. <?=number_format($s['total_payout'], 2)?></td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <div class="row mt-5 pt-3">
+                    <div class="row mt-5 pt-4">
                         <div class="col-6 text-center">
-                            <div class="border-top pt-2">Accountant Signature</div>
+                            <div class="border-top pt-2 mx-5 small text-muted">Accountant / Principal Signature</div>
                         </div>
                         <div class="col-6 text-center">
-                            <div class="border-top pt-2">Employee Signature</div>
+                            <div class="border-top pt-2 mx-5 small text-muted">Faculty Member Signature</div>
                         </div>
                     </div>
 
                     <div class="mt-5 text-center text-muted small border-top pt-3 no-print">
-                        <p>Note: This is a computer-generated document and does not require a physical stamp for internal school records.</p>
-                        <button onclick="window.print()" class="btn btn-sm btn-primary px-4 mt-2"><i class="fas fa-print me-1"></i> Print Pay Slip</button>
+                        <p>This is an electronically generated document. For inquiries, please contact the accounts office.</p>
+                        <button onclick="window.print()" class="btn btn-dark px-5 mt-2 shadow-sm"><i class="fas fa-print me-2"></i> Print Official Slip</button>
                     </div>
                 </div>
             </div>
@@ -78,8 +89,9 @@ if (!$s) { echo 'Salary record not found'; exit; }
 @media print {
     .sidebar, .top-navbar, .no-print { display: none !important; }
     .main-content { margin-left: 0 !important; margin-top: 0 !important; padding: 0 !important; }
-    .card { border: none !important; }
-    body { background: white !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .card { border: none !important; box-shadow: none !important; }
+    body { background: white !important; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    .table th { background-color: #f8f9fa !important; -webkit-print-color-adjust: exact; }
 }
 </style>
 

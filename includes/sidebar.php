@@ -23,7 +23,7 @@ $is_coaching = ($context === 'Coaching');
         <div class="mb-2">
             <i class="fas <?= $is_coaching ? 'fa-book-reader' : 'fa-university' ?> fa-2x"></i>
         </div>
-        <div class="fw-bold h5 mb-0 text-uppercase"><?= $context ?> Portal</div>
+        <div class="fw-bold h5 mb-0 text-uppercase"><?= SCHOOL_NAME ?></div>
         <div class="small fw-normal opacity-75 mt-1" style="font-size: 0.6rem;">Pakistani Standard v3.0</div>
     </div>
 
@@ -140,13 +140,13 @@ $is_coaching = ($context === 'Coaching');
         </a>
         
         <div class="px-3 mb-2 mt-4">
-            <small class="text-uppercase text-muted fw-bold" style="font-size: 0.65rem; letter-spacing: 1px;">Attendance Management</small>
+            <small class="text-uppercase text-muted fw-bold" style="font-size: 0.65rem; letter-spacing: 1px;">Academic Management</small>
         </div>
         <a href="<?=BASE_URL?>admin/attendance.php" class="<?=is_active('attendance.php')?>">
             <i class="fas fa-calendar-check"></i> Mark Attendance
         </a>
         <a href="<?=BASE_URL?>admin/attendance_center.php" class="<?=is_active('attendance_center')?>">
-            <i class="fas fa-clipboard-list"></i> Attendance Center
+            <i class="fas fa-chart-line"></i> Attendance Analytics
         </a>
         
     <?php elseif ($_SESSION['role'] === 'accountant'): ?>

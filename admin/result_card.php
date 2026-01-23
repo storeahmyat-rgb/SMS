@@ -59,7 +59,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="card-body p-5">
                 <div class="row mb-4 text-center">
                     <div class="col-12">
-                        <h2 class="mb-1">School Management System</h2>
+                        <h2 class="mb-1"><?= SCHOOL_NAME ?></h2>
                         <p class="text-muted">Academic Excellence Report</p>
                         <hr>
                     </div>

@@ -34,29 +34,23 @@ if ($teacher_id) {
 <h1>Faculty Control Panel</h1>
 <p class="text-muted">Welcome back, <?=htmlspecialchars($_SESSION['username'])?>. Manage your class attendance.</p>
 
-<div class="row g-4 mb-4">
-    <div class="col-md-6">
-        <div class="stats-card bg-primary text-white p-4 rounded-3 h-100">
-            <div class="d-flex justify-content-between">
-                <div>
-                    <h5 class="mb-0 text-white-50">Assigned Sections</h5>
-                    <h2 class="display-6 fw-bold mb-0"><?=intval($assigned_sections)?></h2>
-                </div>
-                <div class="fs-1 opacity-50"><i class="fas fa-chalkboard"></i></div>
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-6">
+        <div class="card shadow-sm border-0 border-start border-5 border-primary h-100">
+            <div class="card-body p-3 p-md-4">
+                <div class="text-muted small text-uppercase fw-bold mb-1">Assigned Sections</div>
+                <div class="h2 fw-bold text-primary mb-0"><?=intval($assigned_sections)?></div>
+                <div class="mt-2 small text-muted">Groups under your supervision</div>
             </div>
-            <p class="mt-3 mb-0 small"><i class="fas fa-info-circle me-1"></i> You are responsible for these class sections</p>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="stats-card bg-success text-white p-4 rounded-3 h-100">
-            <div class="d-flex justify-content-between">
-                <div>
-                    <h5 class="mb-0 text-white-50">Today's Records</h5>
-                    <h2 class="display-6 fw-bold mb-0"><?=intval($today_attendance)?> <small class="fs-5 opacity-50">Students</small></h2>
-                </div>
-                <div class="fs-1 opacity-50"><i class="fas fa-calendar-check"></i></div>
+    <div class="col-12 col-md-6">
+        <div class="card shadow-sm border-0 border-start border-5 border-success h-100">
+            <div class="card-body p-3 p-md-4">
+                <div class="text-muted small text-uppercase fw-bold mb-1">Today's Presence</div>
+                <div class="h2 fw-bold text-success mb-0"><?=intval($today_attendance)?> <small class="fs-6 opacity-75">Students</small></div>
+                <div class="mt-2 small text-muted">Marked for <?=date('d M Y')?></div>
             </div>
-            <p class="mt-3 mb-0 small"><i class="fas fa-clock me-1"></i> Attendance marked for <?=date('d M Y')?></p>
         </div>
     </div>
 </div>
@@ -65,18 +59,18 @@ if ($teacher_id) {
     <div class="card-header bg-white"><i class="fas fa-bolt me-2"></i>Quick Actions</div>
     <div class="card-body p-4">
         <div class="row g-3">
-            <div class="col-md-6">
-                <a href="<?=BASE_URL?>admin/attendance.php" class="btn btn-outline-primary btn-lg w-100 p-4 text-start">
-                    <i class="fas fa-user-clock d-block mb-3 fs-3"></i>
-                    <strong>Mark Student Attendance</strong>
-                    <div class="small opacity-75">Daily presence tracking for your assigned sections</div>
+            <div class="col-12 col-md-6">
+                <a href="<?=BASE_URL?>admin/attendance.php" class="btn btn-outline-primary btn-lg w-100 p-3 p-md-4 text-start h-100 shadow-sm border-2">
+                    <i class="fas fa-user-clock d-block mb-2 mb-md-3 fs-3"></i>
+                    <strong class="d-block mb-1">Mark Student Attendance</strong>
+                    <div class="small opacity-75">Daily presence tracking for your classes</div>
                 </a>
             </div>
-            <div class="col-md-6">
-                <a href="<?=BASE_URL?>admin/attendance_report.php" class="btn btn-outline-success btn-lg w-100 p-4 text-start">
-                    <i class="fas fa-clipboard-list d-block mb-3 fs-3"></i>
-                    <strong>View Reports</strong>
-                    <div class="small opacity-75">Check attendance logs and generate reports</div>
+            <div class="col-12 col-md-6">
+                <a href="<?=BASE_URL?>admin/attendance_center.php" class="btn btn-outline-success btn-lg w-100 p-3 p-md-4 text-start h-100 shadow-sm border-2">
+                    <i class="fas fa-chart-line d-block mb-2 mb-md-3 fs-3 text-success"></i>
+                    <strong class="d-block mb-1">Attendance Analytics</strong>
+                    <div class="small opacity-75">Track trends and generate detailed reports</div>
                 </a>
             </div>
         </div>

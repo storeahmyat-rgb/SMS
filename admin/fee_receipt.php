@@ -51,9 +51,9 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="card-body p-0">
                 <!-- Header with School Branding -->
                 <div class="p-4 text-center border-bottom bg-light">
-                    <h2 class="fw-bold text-dark text-uppercase mb-1">Modern School System</h2>
-                    <p class="mb-0 text-muted">Education Colony, Phase 2, Karachi, Pakistan</p>
-                    <p class="small text-muted mb-0">Contact: +92 300 0000000 | Email: info@school.pk</p>
+                    <h2 class="fw-bold text-dark text-uppercase mb-1"><?= SCHOOL_NAME ?></h2>
+                    <p class="mb-0 text-muted"><?= SCHOOL_ADDR ?></p>
+                    <p class="small text-muted mb-0">Contact: <?= SCHOOL_CONTACT ?> | Email: <?= SCHOOL_EMAIL ?></p>
                 </div>
                 
                 <div class="p-4">
@@ -115,7 +115,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="col-4"></div>
                         <div class="col-4 border-top text-center pt-2 mt-4 font-heading">
                             <small class="text-dark fw-bold">Authorized Account Officer</small>
-                            <div class="small text-muted">Modern School System</div>
+                            <div class="small text-muted"><?= SCHOOL_NAME ?></div>
                         </div>
                     </div>
                 </div>

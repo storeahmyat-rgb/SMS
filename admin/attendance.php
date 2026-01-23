@@ -25,28 +25,28 @@ if ($is_teacher) {
     $classes = $pdo->query('SELECT * FROM classes')->fetchAll();
 }
 ?>
-<h3>Student Attendance</h3>
-<div class="card p-4">
+<h3 class="fw-bold text-primary mb-4"><i class="fas fa-calendar-check me-2"></i>Daily Attendance Marking</h3>
+<div class="card shadow-sm border-0 p-3 p-md-4">
     <div class="row g-3">
-        <div class="col-md-3">
-            <label class="form-label">Class</label>
-            <select id="class_id" class="form-select">
-                <option value="">-- Select Class --</option>
+        <div class="col-6 col-md-3">
+            <label class="form-label small fw-bold">Select Class</label>
+            <select id="class_id" class="form-select border-primary-subtle shadow-sm">
+                <option value="">-- Class --</option>
                 <?php foreach ($classes as $c): ?>
                     <option value="<?=$c['id']?>"><?=htmlspecialchars($c['name'])?></option>
                 <?php endforeach; ?>
             </select>
         </div>
-        <div class="col-md-3">
-            <label class="form-label">Section</label>
-            <select id="section_id" class="form-select"><option value="">-- All --</option></select>
+        <div class="col-6 col-md-3">
+            <label class="form-label small fw-bold">Section</label>
+            <select id="section_id" class="form-select border-primary-subtle shadow-sm"><option value="">-- All --</option></select>
         </div>
         <div class="col-md-3">
-            <label class="form-label">Date</label>
-            <input type="date" id="att_date" class="form-control" value="<?=date('Y-m-d')?>">
+            <label class="form-label small fw-bold">Date</label>
+            <input type="date" id="att_date" class="form-control border-primary-subtle shadow-sm" value="<?=date('Y-m-d')?>">
         </div>
         <div class="col-md-3 align-self-end">
-            <button id="loadBtn" class="btn btn-primary w-100"><i class="fas fa-search me-1"></i> Load Students</button>
+            <button id="loadBtn" class="btn btn-primary w-100 py-2 shadow-sm"><i class="fas fa-users me-2"></i> Load Student List</button>
         </div>
     </div>
 </div>
@@ -103,6 +103,19 @@ async function saveAttendance(form){
       btn.innerHTML = originalText;
       btn.disabled = false;
   }
+}
+
+// Global function to handle mobile button clicks
+function setStatus(sid, status, btn) {
+    const input = document.getElementById("input_" + sid);
+    if (input) {
+        input.value = status;
+        const container = btn.parentElement;
+        container.querySelectorAll(".btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+    } else {
+        console.error("Input not found for student ID: " + sid);
+    }
 }
 </script>
 

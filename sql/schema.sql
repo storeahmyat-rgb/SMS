@@ -89,6 +89,8 @@ CREATE TABLE student_attendance (
   class_id INT,
   section_id INT,
   attendance_date DATE NOT NULL,
+  in_time TIME NULL,
+  out_time TIME NULL,
   status ENUM('Present','Absent','Leave','Late') DEFAULT 'Present',
   recorded_by INT,
   recorded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -155,9 +157,14 @@ CREATE TABLE salaries (
   teacher_id INT NOT NULL,
   month_year VARCHAR(20) NOT NULL,
   amount DECIMAL(10,2) NOT NULL,
+  bonus_deduction DECIMAL(10,2) DEFAULT 0,
+  total_payout DECIMAL(10,2) NOT NULL,
   paid_status ENUM('Paid','Unpaid') DEFAULT 'Unpaid',
   paid_on DATETIME NULL,
-  FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE CASCADE
+  payment_method VARCHAR(100) NULL,
+  payment_notes TEXT NULL,
+  FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE CASCADE,
+  UNIQUE INDEX unique_teacher_month (teacher_id, month_year)
 );
 
 CREATE TABLE expenses (

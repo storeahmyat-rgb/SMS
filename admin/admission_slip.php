@@ -103,8 +103,8 @@ function renderCopy($type, $s, $context) {
         
         <div class="row align-items-center mb-4">
             <div class="col-8">
-                <h3 class="fw-bold mb-0 text-primary text-uppercase">Modern <?= $context ?> System</h3>
-                <p class="small text-muted mb-0">Phase 2, Education Colony, Karachi | Tel: 0300-0000000</p>
+                <h3 class="fw-bold mb-0 text-primary text-uppercase"><?= SCHOOL_NAME ?></h3>
+                <p class="small text-muted mb-0"><?= SCHOOL_ADDR ?> | Tel: <?= SCHOOL_CONTACT ?></p>
             </div>
             <div class="col-4 text-end">
                 <?php if ($s['photo'] && file_exists(__DIR__ . '/../assets/uploads/students/' . $s['photo'])): ?>

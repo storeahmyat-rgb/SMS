@@ -5,6 +5,12 @@ define('DB_NAME', 'sms_db');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
+// Branding Settings
+define('SCHOOL_NAME', 'Modern School & Coaching');
+define('SCHOOL_ADDR', 'Education Colony, Phase 2, Karachi, Pakistan');
+define('SCHOOL_CONTACT', '+92 300 0000000');
+define('SCHOOL_EMAIL', 'info@school.pk');
+
 // Session settings
 ini_set('session.use_strict_mode', 1);
 session_start();

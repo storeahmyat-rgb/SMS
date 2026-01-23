@@ -30,9 +30,40 @@ $teacher_id = intval($_GET['teacher_id'] ?? 0);
 $absent_only = isset($_GET['absent_only']);
 
 // Data Fetching
-$classes = $pdo->query('SELECT * FROM classes ORDER BY name')->fetchAll();
-$sections = ($class_id) ? $pdo->prepare('SELECT * FROM sections WHERE class_id = ?') : null;
-if ($sections) { $sections->execute([$class_id]); $sections = $sections->fetchAll(); }
+// TEACHER ROLE RESTRICTIONS
+$is_teacher = ($_SESSION['role'] === 'teacher');
+$logged_teacher_id = 0;
+if ($is_teacher) {
+    $stmt = $pdo->prepare('SELECT id FROM teachers WHERE full_name = :n LIMIT 1');
+    $stmt->execute([':n' => $_SESSION['username']]);
+    $logged_teacher_id = $stmt->fetchColumn();
+    
+    // If they are on faculty tab, force single scope and their own record
+    if ($active_tab == 'faculty') { 
+        $scope = 'single'; 
+        $teacher_id = $logged_teacher_id;
+    }
+}
+
+if ($is_teacher) {
+    $classes = $pdo->prepare('SELECT DISTINCT c.* FROM classes c JOIN sections s ON c.id = s.class_id WHERE s.class_teacher_id = ? ORDER BY c.name');
+    $classes->execute([$logged_teacher_id]);
+    $classes = $classes->fetchAll();
+} else {
+    $classes = $pdo->query('SELECT * FROM classes ORDER BY name')->fetchAll();
+}
+
+$sections = null;
+if ($class_id) {
+    if ($is_teacher) {
+        $sections = $pdo->prepare('SELECT * FROM sections WHERE class_id = ? AND class_teacher_id = ?');
+        $sections->execute([$class_id, $logged_teacher_id]);
+    } else {
+        $sections = $pdo->prepare('SELECT * FROM sections WHERE class_id = ?');
+        $sections->execute([$class_id]);
+    }
+    $sections = ($sections) ? $sections->fetchAll() : [];
+}
 
 // Helper for Weekly range
 function getWeekRange($weekStr) {
@@ -80,11 +111,11 @@ $weekRange = getWeekRange($week);
 
 <!-- Filter Bar -->
 <div class="card shadow-sm border-0 mb-4 no-print bg-light">
-    <div class="card-body">
-        <form method="GET" class="row g-3 align-items-end">
+    <div class="card-body p-2 p-md-3">
+        <form method="GET" class="row g-2 g-md-3 align-items-end">
             <input type="hidden" name="tab" value="<?=$active_tab?>">
             
-            <div class="col-md-2">
+            <div class="col-6 col-md-2">
                 <label class="form-label small fw-bold">Report Range</label>
                 <select name="range" class="form-select" onchange="this.form.submit()">
                     <option value="daily" <?=$range=='daily'?'selected':''?>>Daily View</option>
@@ -93,7 +124,7 @@ $weekRange = getWeekRange($week);
                 </select>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-6 col-md-2">
                 <label class="form-label small fw-bold">Scope</label>
                 <select name="scope" class="form-select" onchange="this.form.submit()">
                     <option value="all" <?=$scope=='all'?'selected':''?>>All Members</option>
@@ -103,17 +134,17 @@ $weekRange = getWeekRange($week);
 
             <!-- Time Selectors -->
             <?php if ($range == 'daily'): ?>
-            <div class="col-md-2">
+            <div class="col-6 col-md-2">
                 <label class="form-label small fw-bold">Pick Date</label>
                 <input type="date" name="date" class="form-control" value="<?=$date?>" onchange="this.form.submit()">
             </div>
             <?php elseif ($range == 'weekly'): ?>
-            <div class="col-md-2">
+            <div class="col-6 col-md-2">
                 <label class="form-label small fw-bold">Pick Week</label>
                 <input type="week" name="week" class="form-control" value="<?=$week?>" onchange="this.form.submit()">
             </div>
             <?php elseif ($range == 'monthly'): ?>
-            <div class="col-md-2">
+            <div class="col-6 col-md-2">
                 <label class="form-label small fw-bold">Pick Month</label>
                 <input type="month" name="month" class="form-control" value="<?=$month?>" onchange="this.form.submit()">
             </div>
@@ -122,16 +153,16 @@ $weekRange = getWeekRange($week);
             <!-- Entity Selectors (Student Specific) -->
             <?php if ($active_tab == 'student'): ?>
                 <?php if ($scope == 'all'): ?>
-                <div class="col-md-2">
+                <div class="col-6 col-md-2">
                     <label class="form-label small fw-bold">Class</label>
                     <select name="class_id" class="form-select" onchange="this.form.submit()">
-                        <option value="">-- All Classes --</option>
+                        <option value="">-- Classes --</option>
                         <?php foreach($classes as $c): ?>
                             <option value="<?=$c['id']?>" <?=$c['id']==$class_id?'selected':''?>><?=$c['name']?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-6 col-md-2">
                     <label class="form-label small fw-bold">Section</label>
                     <select name="section_id" class="form-select" <?=$class_id?'':'disabled'?> onchange="this.form.submit()">
                         <option value="">-- All --</option>
@@ -141,7 +172,16 @@ $weekRange = getWeekRange($week);
                     </select>
                 </div>
                 <?php else: 
-                    $students_list = $pdo->query('SELECT id, full_name, admission_no FROM students WHERE status="Active" ORDER BY full_name')->fetchAll();
+                    $q = 'SELECT id, full_name, admission_no FROM students WHERE status="Active"';
+                    $p = [];
+                    if ($is_teacher) {
+                        $q .= ' AND section_id IN (SELECT id FROM sections WHERE class_teacher_id = ?)';
+                        $p[] = $logged_teacher_id;
+                    }
+                    $q .= ' ORDER BY full_name';
+                    $students_list = $pdo->prepare($q);
+                    $students_list->execute($p);
+                    $students_list = $students_list->fetchAll();
                 ?>
                 <div class="col-md-4">
                     <label class="form-label small fw-bold">Search Student</label>
@@ -156,22 +196,32 @@ $weekRange = getWeekRange($week);
             <?php else: ?>
                 <!-- Faculty Selectors -->
                 <?php if ($scope == 'single'): 
-                    $teachers_list = $pdo->query('SELECT id, full_name, teacher_id FROM teachers WHERE status="Active"')->fetchAll();
+                    $q = 'SELECT id, full_name, teacher_id FROM teachers WHERE status="Active"';
+                    $p = [];
+                    if ($is_teacher) {
+                        $q .= ' AND id = ?';
+                        $p[] = $logged_teacher_id;
+                    }
+                    $q .= ' ORDER BY full_name';
+                    $teachers_list = $pdo->prepare($q);
+                    $teachers_list->execute($p);
+                    $teachers_list = $teachers_list->fetchAll();
                 ?>
                 <div class="col-md-4">
                     <label class="form-label small fw-bold">Search Faculty</label>
-                    <select name="teacher_id" class="form-select select2" onchange="this.form.submit()">
-                        <option value="">-- Select Faculty --</option>
+                    <select name="teacher_id" class="form-select select2" onchange="this.form.submit()" <?=$is_teacher?'disabled':''?>>
+                        <?php if(!$is_teacher): ?><option value="">-- Select Faculty --</option><?php endif; ?>
                         <?php foreach($teachers_list as $tl): ?>
                             <option value="<?=$tl['id']?>" <?=$tl['id']==$teacher_id?'selected':''?>><?=$tl['full_name']?> (<?=$tl['teacher_id']?>)</option>
                         <?php endforeach; ?>
                     </select>
+                    <?php if($is_teacher): ?><input type="hidden" name="teacher_id" value="<?=$logged_teacher_id?>"><?php endif; ?>
                 </div>
                 <?php endif; ?>
             <?php endif; ?>
 
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100 shadow-sm"><i class="fas fa-sync-alt me-1"></i> Apply</button>
+            <div class="col-12 col-md-2">
+                <button type="submit" class="btn btn-primary w-100 shadow-sm py-2"><i class="fas fa-sync-alt me-1"></i> Apply</button>
             </div>
         </form>
     </div>
@@ -192,6 +242,7 @@ $weekRange = getWeekRange($week);
             $params = [':date' => $date];
             if ($class_id) { $query .= " AND s.class_id = :cid"; $params[':cid'] = $class_id; }
             if ($section_id) { $query .= " AND s.section_id = :sid"; $params[':sid'] = $section_id; }
+            if ($is_teacher) { $query .= " AND se.class_teacher_id = :tid"; $params[':tid'] = $logged_teacher_id; }
             $query .= " ORDER BY c.id, se.id, s.roll_no, s.full_name";
             $stmt = $pdo->prepare($query);
             $stmt->execute($params);
@@ -208,6 +259,7 @@ $weekRange = getWeekRange($week);
             $params = [];
             if ($class_id) { $query .= " AND s.class_id = :cid"; $params[':cid'] = $class_id; }
             if ($section_id) { $query .= " AND s.section_id = :sid"; $params[':sid'] = $section_id; }
+            if ($is_teacher) { $query .= " AND se.class_teacher_id = :tid"; $params[':tid'] = $logged_teacher_id; }
             $query .= " ORDER BY c.id, se.id, s.roll_no";
             $students_list = $pdo->prepare($query);
             $students_list->execute($params);

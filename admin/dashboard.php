@@ -8,7 +8,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'super_admin') {
     header('Location: ' . BASE_URL . 'admin/dashboard_enhanced.php');
     exit;
 } elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'accountant') {
-    header('Location: ' . BASE_URL . 'accountant/income_report.php');
+    header('Location: ' . BASE_URL . 'admin/finance_hub.php');
     exit;
 } elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'teacher') {
     header('Location: ' . BASE_URL . 'teacher/dashboard.php');

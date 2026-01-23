@@ -56,10 +56,10 @@ $pending_count = $pdo->query('SELECT COUNT(*) FROM students WHERE status="Active
                 </a>
             </div>
             <div class="col-md-4">
-                <a href="<?=BASE_URL?>admin/income_report.php" class="btn btn-outline-info btn-lg w-100 p-3 text-start h-100">
-                    <i class="fas fa-file-invoice-dollar d-block mb-3 fs-3"></i>
-                    <strong>Revenue Reports</strong>
-                    <div class="small opacity-75">View detailed collection logs</div>
+                <a href="<?=BASE_URL?>admin/profitloss.php" class="btn btn-outline-info btn-lg w-100 p-3 text-start h-100">
+                    <i class="fas fa-file-invoice-dollar d-block mb-3 fs-3 text-info"></i>
+                    <strong>Financial Analytics</strong>
+                    <div class="small opacity-75">View detailed profit & loss logs</div>
                 </a>
             </div>
             <div class="col-md-4">

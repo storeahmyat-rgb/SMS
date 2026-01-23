@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="col-md-4">
                     <label class="form-label fw-bold">Base Salary</label>
                     <div class="input-group">
-                        <span class="input-group-text">$</span>
+                        <span class="input-group-text">Rs.</span>
                         <input type="number" step="0.01" class="form-control" name="salary" value="<?=htmlspecialchars($t['salary'])?>" required>
                     </div>
                 </div>

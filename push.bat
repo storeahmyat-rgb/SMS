@@ -27,7 +27,7 @@ if not exist ".git" (
 :: Remote Setup
 echo Checking remotes...
 git remote remove origin >nul 2>&1
-git remote add origin https://github.com/storeahmyat-rgb/SMS.git
+git remote add origin https://github.com/muhammadahmer1999/SMS-Pro-Enhanced.git
 
 :: Add and Commit
 echo Adding files...
